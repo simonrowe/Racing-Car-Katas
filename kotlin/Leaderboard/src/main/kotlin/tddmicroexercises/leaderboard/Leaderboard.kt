@@ -10,6 +10,7 @@ class Leaderboard(vararg races: Race) {
 
   fun driverResults() = driverResults
 
-  fun driverRankings(): List<String> = driverResults.keys.sortedByDescending { driverResults[it]!! }
+  fun driverRankings(): List<String> =
+    driverResults.keys.sortedWith(compareByDescending<String> { driverResults[it] }.thenByDescending { it })
 
 }
