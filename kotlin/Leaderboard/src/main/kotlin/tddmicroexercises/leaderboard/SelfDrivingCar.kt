@@ -1,3 +1,6 @@
 package tddmicroexercises.leaderboard
 
-class SelfDrivingCar(var algorithmVersion: String, company: String) : Driver(algorithmVersion, company)
+data class SelfDrivingCar(val algorithmVersion: String, val company: String) : IDriver {
+  override val name: String
+    get() = "$company car with algorithm $algorithmVersion"
+}

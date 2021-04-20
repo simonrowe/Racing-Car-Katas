@@ -1,53 +1,50 @@
 package tddmicroexercises.leaderboard
 
-import org.junit.Test
-
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-
-import tddmicroexercises.leaderboard.TestData.driver1
-import tddmicroexercises.leaderboard.TestData.driver2
-import tddmicroexercises.leaderboard.TestData.driver3
+import org.junit.Test
+import tddmicroexercises.leaderboard.TestData.LEWIS_HAMILTON
+import tddmicroexercises.leaderboard.TestData.NICO_ROSBERG
+import tddmicroexercises.leaderboard.TestData.SEBASTIAN_VETTEL
 
 class LeaderboardTest {
 
-    @Test
-    fun itShouldSumThePoints() {
-        // setup
+  private val race1: Race = Race("Australian Grand Prix", NICO_ROSBERG, LEWIS_HAMILTON, SEBASTIAN_VETTEL)
+  private val race2: Race = Race("Malaysian Grand Prix", SEBASTIAN_VETTEL, LEWIS_HAMILTON, NICO_ROSBERG)
+  private val race3: Race = Race("Chinese Grand Prix", LEWIS_HAMILTON, NICO_ROSBERG, SEBASTIAN_VETTEL)
+  private val sampleLeaderboard1: Leaderboard = Leaderboard(race1, race2, race3)
 
-        // act
-        val results = TestData.sampleLeaderboard1.driverResults()
+  @Test
+  fun itShouldSumThePoints() {
+    val results = sampleLeaderboard1.driverResults()
+    assertEquals(
+      race1.getPoints(LEWIS_HAMILTON) + race2.getPoints(LEWIS_HAMILTON) + race3.getPoints(LEWIS_HAMILTON),
+      results[LEWIS_HAMILTON.name]
+    )
+  }
 
-        // verify
-        assertTrue("results $results", results.containsKey("Lewis Hamilton"))
-        assertEquals((18 + 18 + 25).toLong(), (results.get("Lewis Hamilton") as Int).toLong())
-    }
+  @Test
+  fun isShouldFindTheWinner() {
+    // act
+    val result = sampleLeaderboard1.driverRankings()
 
-    @Test
-    fun isShouldFindTheWinner() {
-        // setup
+    // verify
+    assertEquals("Lewis Hamilton", result.first())
+  }
 
-        // act
-        val result = TestData.sampleLeaderboard1.driverRankings()
+  @Test
+  fun itShouldKeepAllDriversWhenSamePoints() {
+    // setup
+    // bug, drops drivers with same points
+    val winDriver1 = Race("Australian Grand Prix", NICO_ROSBERG, LEWIS_HAMILTON, SEBASTIAN_VETTEL)
+    val winDriver2 = Race("Malaysian Grand Prix", LEWIS_HAMILTON, NICO_ROSBERG, SEBASTIAN_VETTEL)
+    val leaderboard = Leaderboard(winDriver1, winDriver2)
 
-        // verify
-        assertEquals("Lewis Hamilton", result.get(0))
-    }
+    // act
+    val rankings = leaderboard.driverRankings()
 
-    @Test
-    fun itShouldKeepAllDriversWhenSamePoints() {
-        // setup
-        // bug, drops drivers with same points
-        val winDriver1 = Race("Australian Grand Prix", driver1, driver2, driver3)
-        val winDriver2 = Race("Malaysian Grand Prix", driver2, driver1, driver3)
-        val exEquoLeaderBoard = Leaderboard(winDriver1, winDriver2)
-
-        // act
-        val rankings = exEquoLeaderBoard.driverRankings()
-
-        // verify
-        assertEquals(arrayListOf(driver1.name, driver2.name, driver3.name), rankings)
-        // note: the order of driver1 and driver2 is JDK/platform dependent
-    }
+    // verify
+    assertEquals(arrayListOf(NICO_ROSBERG.name, LEWIS_HAMILTON.name, SEBASTIAN_VETTEL.name), rankings)
+    // note: the order of driver1 and driver2 is JDK/platform dependent
+  }
 
 }
